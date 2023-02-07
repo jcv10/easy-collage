@@ -1,4 +1,15 @@
-function Form() {
+function Form(props){
+    function getCollage(){
+        fetch('/resize/image')
+            .then(data => {
+                console.log(data);
+                return data.json();
+            })
+            .then(img => props.handleClick(img.url))  
+            .catch(err => console.log(err));
+         
+    }
+
     return(
         <form onSubmit={(e) => e.preventDefault()}
             style={{width:'250px', border:'1px solid black', borderRadius:'10px', padding:'10px'}}>
@@ -24,7 +35,7 @@ function Form() {
                 id="thickness"
                 min="1"
                 max="10"/>
-            <button>Make Collage</button>
+            <button onClick={getCollage}>Make Collage</button>
         </form>
     )
 }
