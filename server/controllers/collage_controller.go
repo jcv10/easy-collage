@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -15,21 +14,18 @@ type ResponseData struct {
 type Data struct {
 	Color     string `json:"color"`
 	Direction string `json:"direction"`
+	Border    int32  `json:"border"`
 }
 
 func UploadImages(w http.ResponseWriter, r *http.Request) {
 
-	body, err := io.ReadAll(r.Body)
-
-	defer r.Body.Close()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	var d Data
 
-	err = json.Unmarshal(body, &d)
+	r.ParseMultipartForm(80)
+
+	body := r.FormValue("data")
+
+	err := json.Unmarshal([]byte(body), &d)
 
 	if err != nil {
 		fmt.Println(err)
@@ -37,6 +33,16 @@ func UploadImages(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(d.Color)
 	fmt.Println(d.Direction)
+	fmt.Println(d.Border)
+
+	files := r.FormValue("images")
+
+	if len(files) == 0 {
+		http.Error(w, "No image files found", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(files)
 
 	res := ResponseData{
 		Message: "upload route hit",
